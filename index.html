@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Telepatía · Audit Demo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+  .font-display { font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
+  .telepatia-green { background-color: #F4F9F3; }
+  .telepatia-green-dark { color: #2D6A4F; }
+  .border-gradient { border: 1px solid; border-image: linear-gradient(to right, #f4a261, #F4F9F3) 1; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #f1f1f1; }
+  ::-webkit-scrollbar-thumb { background: #c8c8c8; border-radius: 3px; }
+  mark.flaw { background: #fee2e2; color: #991b1b; padding: 1px 3px; border-radius: 3px; border-bottom: 2px solid #ef4444; cursor: help; }
+  mark.flaw::after { content: " ⚠ " attr(data-flaw); font-size: 9px; font-weight: 700; color: #b91c1c; background: #fff; padding: 0 4px; border-radius: 3px; margin-left: 2px; border: 1px solid #fecaca; }
+</style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<!-- LAUNCHER / LANDING -->
+<div id="launcher" class="min-h-screen flex items-center justify-center p-8">
+  <div class="max-w-5xl w-full">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white text-xl font-bold">T</div>
+        <span class="text-2xl font-bold text-slate-800">telepatia.ai</span>
+      </div>
+      <h1 class="text-5xl font-bold text-slate-900 mb-3 font-display">Audit Platform Demo</h1>
+      <p class="text-slate-600 text-lg">Seleccione el módulo que desea demostrar</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Audit Module Card -->
+      <button onclick="showView('audit')" class="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 border-2 border-transparent hover:border-emerald-500 text-left">
+        <div class="w-14 h-14 rounded-xl bg-emerald-100 flex items-center justify-center mb-4 group-hover:bg-emerald-500 transition-colors">
+          <svg class="w-7 h-7 text-emerald-600 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        </div>
+        <div class="text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-1">Institución · Vista Operativa</div>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Módulo de Auditoría</h3>
+        <p class="text-sm text-slate-600">Revisión caso por caso de expedientes. Corrección y ejecución de auditorías.</p>
+        <div class="mt-4 text-sm font-semibold text-emerald-600 group-hover:translate-x-1 transition-transform">Abrir módulo →</div>
+      </button>
+
+      <!-- Auditors Dashboard -->
+      <button onclick="showView('auditor')" class="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 border-2 border-transparent hover:border-teal-500 text-left">
+        <div class="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center mb-4 group-hover:bg-teal-500 transition-colors">
+          <svg class="w-7 h-7 text-teal-600 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div class="text-xs font-semibold text-teal-700 uppercase tracking-wider mb-1">Institución · Vista Auditor</div>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Dashboard Auditores</h3>
+        <p class="text-sm text-slate-600">Métricas de rendimiento personal. Ranking de doctores, alertas de presupuesto y TAMIZAJE.</p>
+        <div class="mt-4 text-sm font-semibold text-teal-600 group-hover:translate-x-1 transition-transform">Abrir dashboard →</div>
+      </button>
+
+      <!-- CEO Dashboard -->
+      <button onclick="showView('ceo')" class="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 border-2 border-transparent hover:border-indigo-500 text-left">
+        <div class="w-14 h-14 rounded-xl bg-indigo-100 flex items-center justify-center mb-4 group-hover:bg-indigo-500 transition-colors">
+          <svg class="w-7 h-7 text-indigo-600 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <div class="text-xs font-semibold text-indigo-700 uppercase tracking-wider mb-1">Telepatía · Backoffice</div>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Dashboard CEO</h3>
+        <p class="text-sm text-slate-600">Vista ejecutiva consolidada. Cumplimiento SUPERSALUD, doctores top, presupuesto e impacto.</p>
+        <div class="mt-4 text-sm font-semibold text-indigo-600 group-hover:translate-x-1 transition-transform">Abrir backoffice →</div>
+      </button>
+    </div>
+
+    <div class="mt-10 text-center text-sm text-slate-500">
+      Demo interactivo · Q2 2026 · Presione <kbd class="px-2 py-1 bg-slate-200 rounded text-xs">Esc</kbd> en cualquier pantalla para volver
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- VISTA 1: AUDIT MODULE (Green)                  -->
+<!-- ============================================== -->
+<div id="view-audit" class="hidden min-h-screen telepatia-green">
+  <div class="flex h-screen">
+    <!-- Sidebar: Expedientes -->
+    <aside class="w-96 bg-white border-r border-slate-200 flex flex-col">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <button onclick="goHome()" class="p-2 hover:bg-slate-100 rounded-lg">
+            <svg class="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <h1 class="text-xl font-bold text-slate-900">Auditoría</h1>
+        </div>
+        <div class="relative">
+          <button onclick="document.getElementById('uploadMenu').classList.toggle('hidden')" class="p-2 hover:bg-slate-100 rounded-lg" title="Subir expedientes">
+            <svg class="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          </button>
+          <div id="uploadMenu" class="hidden absolute right-0 top-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg w-56 z-50 overflow-hidden">
+            <button onclick="document.getElementById('uploadFiles').click(); document.getElementById('uploadMenu').classList.add('hidden')" class="w-full text-left px-3 py-2 text-sm hover:bg-emerald-50 border-b border-slate-100 flex items-center gap-2">
+              📄 <div><div class="font-semibold text-slate-900">Subir PDFs</div><div class="text-[10px] text-slate-500">Uno o varios archivos</div></div>
+            </button>
+            <button onclick="document.getElementById('uploadFolder').click(); document.getElementById('uploadMenu').classList.add('hidden')" class="w-full text-left px-3 py-2 text-sm hover:bg-emerald-50 flex items-center gap-2">
+              📁 <div><div class="font-semibold text-slate-900">Subir carpeta completa</div><div class="text-[10px] text-slate-500">Procesa todos los PDFs dentro</div></div>
+            </button>
+          </div>
+          <input type="file" id="uploadFiles" accept="application/pdf,.pdf" multiple class="hidden" onchange="handleUpload(this.files, 'files')"/>
+          <input type="file" id="uploadFolder" webkitdirectory directory multiple class="hidden" onchange="handleUpload(this.files, 'folder')"/>
+        </div>
+      </div>
+      <div class="px-5 pt-4 pb-2">
+        <input type="text" id="caseSearch" oninput="filterCases()" placeholder="Buscar expediente..." class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none" />
+      </div>
+      <div class="px-5 pb-3">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Expedientes (<span id="caseCount">0</span>)</div>
+      </div>
+      <div id="caseList" class="flex-1 overflow-y-auto px-3 pb-4 space-y-2"></div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <div class="bg-white border-b border-slate-200 px-6 py-3">
+        <div class="flex items-center gap-2">
+          <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white">
+            <option>Todos los doctores</option>
+            <option>Dr. Ana Escobar</option>
+            <option>Dr. Carlos Mora</option>
+            <option>Dr. Laura Vega</option>
+            <option>Dr. Pedro Ruiz</option>
+          </select>
+          <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white">
+            <option>Todas las especialidades</option>
+            <option>Medicina General</option>
+            <option>Pediatría</option>
+            <option>Cardiología</option>
+          </select>
+          <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white">
+            <option>Todos los códigos</option>
+          </select>
+          <select id="statusFilter" onchange="filterCases()" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white">
+            <option value="all">Todos los estados</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Revisado">Revisado</option>
+            <option value="Aprobado">Aprobado</option>
+          </select>
+          <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white">
+            <option>Descendente</option>
+            <option>Ascendente</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="caseDetail" class="flex-1 overflow-y-auto p-8">
+        <div class="h-full flex items-center justify-center text-slate-400">
+          <div class="text-center">
+            <svg class="w-20 h-20 mx-auto mb-4 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <p class="text-lg">Seleccione un expediente</p>
+            <p class="text-sm mt-2">de la lista de la izquierda</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- VISTA 2: AUDITORS DASHBOARD                    -->
+<!-- ============================================== -->
+<div id="view-auditor" class="hidden min-h-screen telepatia-green">
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Header -->
+    <div class="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <button onclick="goHome()" class="p-2 hover:bg-slate-100 rounded-lg">
+          <svg class="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <h1 class="text-xl font-bold text-slate-900">Auditoría</h1>
+        <div class="flex items-center gap-2 ml-4">
+          <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white">
+            <option>General</option>
+            <option>Medicina Interna</option>
+            <option>Pediatría</option>
+          </select>
+          <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white">
+            <option>Todas las sedes</option>
+            <option>Sede Norte</option>
+            <option>Sede Centro</option>
+          </select>
+          <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white">
+            <option>Mapeo de auditoría</option>
+          </select>
+          <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-1.5">
+            <svg class="w-4 h-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <span class="text-sm text-emerald-700 font-medium">15/03/2026 - 14/04/2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-slate-600">Auditor: <b>Juan Carlos Kuan</b></span>
+        <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">JK</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-8">
+      <!-- Personal KPI Cards -->
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-emerald-500">
+          <div class="text-xs text-slate-500 uppercase font-semibold tracking-wider">Mis Casos Auditados (MTD)</div>
+          <div class="text-3xl font-bold text-slate-900 mt-2">147</div>
+          <div class="text-xs text-emerald-600 mt-1">↑ 18% vs mes anterior</div>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-teal-500">
+          <div class="text-xs text-slate-500 uppercase font-semibold tracking-wider">Mi Puntaje Promedio</div>
+          <div class="text-3xl font-bold text-slate-900 mt-2">88.6<span class="text-lg text-slate-400">%</span></div>
+          <div class="text-xs text-teal-600 mt-1">ACEPTABLE · Objetivo ≥85%</div>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-amber-500">
+          <div class="text-xs text-slate-500 uppercase font-semibold tracking-wider">Casos Pendientes</div>
+          <div class="text-3xl font-bold text-slate-900 mt-2">23</div>
+          <div class="text-xs text-amber-600 mt-1">4 urgentes</div>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-rose-500">
+          <div class="text-xs text-slate-500 uppercase font-semibold tracking-wider">Hallazgos Este Mes</div>
+          <div class="text-3xl font-bold text-slate-900 mt-2">12</div>
+          <div class="text-xs text-rose-600 mt-1">2 críticos · 4 mayores · 6 menores</div>
+        </div>
+      </div>
+
+      <!-- Doctor Ranking + Score Tiers -->
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="col-span-2 bg-white rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-900">Clasificación de Doctores · Puntajes</h3>
+            <div class="flex gap-2">
+              <button onclick="sortDoctors('score')" class="text-xs px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-medium">Por Puntaje</button>
+              <button onclick="sortDoctors('orders')" class="text-xs px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-medium">Por Órdenes</button>
+            </div>
+          </div>
+          <table class="w-full text-sm">
+            <thead class="text-xs text-slate-500 uppercase border-b border-slate-200">
+              <tr>
+                <th class="text-left py-2 w-12">Rank</th>
+                <th class="text-left py-2">Doctor</th>
+                <th class="text-center py-2">Puntaje</th>
+                <th class="text-center py-2">Órdenes</th>
+                <th class="text-center py-2">Exámenes</th>
+                <th class="text-center py-2">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="doctorTable"></tbody>
+          </table>
+        </div>
+
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <h3 class="font-bold text-slate-900 mb-3">Niveles de Clasificación</h3>
+          <div class="space-y-2" id="scoreTiers"></div>
+        </div>
+      </div>
+
+      <!-- Budget Alerts + TAMIZAJE Goals -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-900">Alertas de Presupuesto (Órdenes Médicas)</h3>
+            <span class="text-xs text-slate-500">EPS Sanitas · Abril 2026</span>
+          </div>
+          <div class="space-y-3" id="budgetAlerts"></div>
+        </div>
+
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-900">TAMIZAJE · Metas Mensuales</h3>
+            <span class="text-xs text-slate-500">Progreso vs Objetivo</span>
+          </div>
+          <div class="space-y-3" id="tamizajeList"></div>
+        </div>
+      </div>
+
+      <!-- Exams with pertinence split + Doctor pertinence alerts -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-bold text-slate-900">Órdenes Médicas · Pertinencia</h3>
+            <div class="flex items-center gap-3 text-[10px]">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-sm"></span>Pertinente</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-rose-500 rounded-sm"></span>No pertinente</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">Evaluación automática contra Guías de Práctica Clínica y CIE-10</p>
+          <div id="examsList" class="space-y-3"></div>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-bold text-slate-900">🚩 Doctores Flaggeados · Impertinencia</h3>
+            <button onclick="alert('📧 Recap semanal programado para todos los doctores.\\nSe enviará cada viernes a las 17:00 con:\\n• % órdenes pertinentes e impertinentes\\n• Top exámenes impertinentes\\n• Recomendaciones por GPC')" class="text-[11px] px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-semibold">📅 Programar recap semanal</button>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">Doctores con impertinencia ≥ 10% — se recomienda enviar feedback</p>
+          <div id="pertinenceList" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Remisiones a Especialistas · Pertinencia -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-bold text-slate-900">Remisiones a Especialistas · Pertinencia</h3>
+            <div class="flex items-center gap-3 text-[10px]">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-sm"></span>Pertinente</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-rose-500 rounded-sm"></span>No pertinente</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">Evaluación automática contra criterios de referencia y contrarreferencia (Res. 3100)</p>
+          <div id="referralsList" class="space-y-3"></div>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-bold text-slate-900">🚩 Doctores Flaggeados · Remisiones</h3>
+            <button onclick="alert('📧 Recap semanal de remisiones programado.\\nSe enviará cada viernes a las 17:00 con:\\n• % remisiones pertinentes e impertinentes\\n• Especialidades con más remisiones innecesarias\\n• Criterios de referencia/contrarreferencia')" class="text-[11px] px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-semibold">📅 Programar recap semanal</button>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">Doctores con impertinencia de remisiones ≥ 10%</p>
+          <div id="referralDoctorList" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Trend Chart -->
+      <div class="bg-white rounded-xl p-5 shadow-sm">
+        <h3 class="font-bold text-slate-900 mb-4">Puntaje Diario Promedio · Últimos 31 días</h3>
+        <canvas id="auditorTrendChart" height="90"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- VISTA 3: CEO DASHBOARD (Blue backoffice)       -->
+<!-- ============================================== -->
+<div id="view-ceo" class="hidden min-h-screen bg-slate-50">
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="w-60 bg-white border-r border-slate-200 min-h-screen p-4 flex flex-col">
+      <div class="flex items-center gap-2 mb-8 pl-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold">T</div>
+        <div>
+          <div class="font-bold text-slate-900 text-sm">telepatia.ai</div>
+          <div class="text-xs text-slate-500">Insights</div>
+        </div>
+      </div>
+      <nav class="space-y-1 text-sm flex-1">
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>📊</span> Health score</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>📋</span> Consultas</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>👥</span> Pertinencia</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 font-semibold"><span>✓</span> Auditoría</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>🩺</span> Uso de doctores</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>🤖</span> Telepatía Intelligence</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>📧</span> Generación de Emails</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>📖</span> Guías Médicas</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>💬</span> Feedback Sesiones</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>🏥</span> Institutions</a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-600"><span>⚙️</span> Accounts</a>
+      </nav>
+      <button onclick="goHome()" class="text-sm text-slate-500 hover:text-slate-900 flex items-center gap-2 px-3 py-2">← Volver al inicio</button>
+    </aside>
+
+    <main class="flex-1 p-6">
+      <!-- Top bar -->
+      <div class="flex items-center justify-end gap-3 mb-6">
+        <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-1.5">
+          <div class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">JK</div>
+          <div>
+            <div class="text-xs font-semibold text-slate-900">juan.kuan</div>
+            <div class="text-[10px] text-slate-500">juan.kuan@telepatia.ai</div>
+          </div>
+        </div>
+        <button class="text-sm text-slate-600 flex items-center gap-1">🌐 ES</button>
+      </div>
+
+      <!-- Header with filters -->
+      <div class="bg-white rounded-xl p-5 shadow-sm mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+            <h2 class="text-xl font-bold text-slate-900">Auditoría</h2>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <div>
+              <div class="text-xs text-slate-500 mb-1">Rango de Tiempo</div>
+              <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white"><option>Últimos 31 días</option><option>Últimos 7 días</option><option>Este año</option></select>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">Fecha Inicio</div>
+              <input type="date" value="2026-03-15" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5"/>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">Fecha Fin</div>
+              <input type="date" value="2026-04-14" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5"/>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">Sede</div>
+              <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white"><option>Todas las sedes</option></select>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">Institución</div>
+              <select class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white"><option>Todas las instituciones</option><option>EPS Sanitas</option><option>EPS Sura</option><option>Nueva EPS</option></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-1 border-b border-slate-200 -mx-5 px-5">
+          <button onclick="ceoTab('general')" id="tab-general" class="ceo-tab px-4 py-2 text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600">Auditorías Generales</button>
+          <button onclick="ceoTab('doctor')" id="tab-doctor" class="ceo-tab px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-900">Auditorías por Doctor</button>
+          <button onclick="ceoTab('budget')" id="tab-budget" class="ceo-tab px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-900">Presupuesto y Alertas</button>
+          <button onclick="ceoTab('tamizaje')" id="tab-tamizaje" class="ceo-tab px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-900">TAMIZAJE</button>
+          <button onclick="ceoTab('criteria')" id="tab-criteria" class="ceo-tab px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-900">Mapeo de Criterios</button>
+        </div>
+      </div>
+
+      <!-- Tab: General -->
+      <div id="ceo-general" class="ceo-panel">
+        <div class="grid grid-cols-4 gap-4 mb-6">
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">📋</div>
+              <div class="text-xs text-emerald-600 font-semibold">+12.4%</div>
+            </div>
+            <div class="text-xs text-slate-500 uppercase font-semibold">Total de Auditorías</div>
+            <div class="text-3xl font-bold text-slate-900 mt-1">1,847</div>
+          </div>
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">✓</div>
+              <div class="text-xs text-emerald-600 font-semibold">ACEPTABLE</div>
+            </div>
+            <div class="text-xs text-slate-500 uppercase font-semibold">Cumplimiento Regulatorio</div>
+            <div class="text-3xl font-bold text-slate-900 mt-1">88.6<span class="text-lg text-slate-400">%</span></div>
+          </div>
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center">⚠️</div>
+              <div class="text-xs text-rose-600 font-semibold">2 críticos</div>
+            </div>
+            <div class="text-xs text-slate-500 uppercase font-semibold">Hallazgos Activos</div>
+            <div class="text-3xl font-bold text-slate-900 mt-1">24</div>
+          </div>
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">💰</div>
+              <div class="text-xs text-amber-600 font-semibold">3 en ORANGE</div>
+            </div>
+            <div class="text-xs text-slate-500 uppercase font-semibold">Uso Presupuesto</div>
+            <div class="text-3xl font-bold text-slate-900 mt-1">82<span class="text-lg text-slate-400">%</span></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <h3 class="font-bold text-slate-900 mb-3">Top Doctores · Puntajes Más Bajos</h3>
+            <div id="topLowDoctors"></div>
+          </div>
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <h3 class="font-bold text-slate-900 mb-3">Top Doctores · Puntajes Más Altos</h3>
+            <div id="topHighDoctors"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="text-xs text-slate-500 uppercase font-semibold">Total Auditorías</div>
+            <div class="text-2xl font-bold text-slate-900 mt-1">1,847</div>
+            <div class="text-xs text-slate-500 mt-1">En rango seleccionado</div>
+          </div>
+          <div class="bg-emerald-50 rounded-xl p-5 shadow-sm">
+            <div class="text-xs text-emerald-700 uppercase font-semibold">Puntaje Promedio</div>
+            <div class="text-2xl font-bold text-emerald-700 mt-1">88.6%</div>
+            <div class="text-xs text-emerald-700 mt-1">ACEPTABLE</div>
+          </div>
+          <div class="bg-indigo-50 rounded-xl p-5 shadow-sm">
+            <div class="text-xs text-indigo-700 uppercase font-semibold">Doctores Auditados</div>
+            <div class="text-2xl font-bold text-indigo-700 mt-1">42</div>
+            <div class="text-xs text-indigo-700 mt-1">de 58 registrados</div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-5 shadow-sm mb-6">
+          <h3 class="font-bold text-slate-900 mb-3">Puntaje Diario Promedio</h3>
+          <canvas id="ceoTrendChart" height="80"></canvas>
+        </div>
+
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <h3 class="font-bold text-slate-900 mb-3">📊 Análisis Detallado · Mapa de Calor Semanal por Sección</h3>
+          <div id="heatmap"></div>
+        </div>
+      </div>
+
+      <!-- Tab: Doctor -->
+      <div id="ceo-doctor" class="ceo-panel hidden">
+        <div class="bg-white rounded-xl p-5 shadow-sm mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-900">Ranking de Doctores por Impacto en Órdenes</h3>
+            <div class="flex gap-2 text-xs">
+              <span class="px-2 py-1 bg-rose-100 text-rose-700 rounded-full font-semibold">5 en CRITICO</span>
+              <span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-semibold">12 EXCELENTE</span>
+            </div>
+          </div>
+          <table class="w-full text-sm">
+            <thead class="text-xs text-slate-500 uppercase border-b border-slate-200">
+              <tr>
+                <th class="text-left py-2">Rank</th>
+                <th class="text-left py-2">Doctor</th>
+                <th class="text-left py-2">Especialidad</th>
+                <th class="text-center py-2">Puntaje</th>
+                <th class="text-center py-2">Órdenes MTD</th>
+                <th class="text-right py-2">Costo Impacto</th>
+                <th class="text-center py-2">Aprobación</th>
+                <th class="text-center py-2">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="ceoDoctorTable"></tbody>
+          </table>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <h3 class="font-bold text-slate-900 mb-3">Top 5 Doctores · Costo Acumulado</h3>
+            <canvas id="doctorImpactChart" height="180"></canvas>
+          </div>
+          <div class="bg-white rounded-xl p-5 shadow-sm">
+            <h3 class="font-bold text-slate-900 mb-3">Exámenes Más Ordenados (Global)</h3>
+            <div id="ceoExamsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Budget -->
+      <div id="ceo-budget" class="ceo-panel hidden">
+        <div class="grid grid-cols-4 gap-3 mb-6">
+          <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-emerald-500"><div class="text-xs text-slate-500">GREEN · On Track</div><div class="text-2xl font-bold text-emerald-600">18</div><div class="text-xs text-slate-500">doctores</div></div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-amber-500"><div class="text-xs text-slate-500">YELLOW · 75-90%</div><div class="text-2xl font-bold text-amber-600">9</div><div class="text-xs text-slate-500">doctores</div></div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-orange-500"><div class="text-xs text-slate-500">ORANGE · 90-100%</div><div class="text-2xl font-bold text-orange-600">3</div><div class="text-xs text-slate-500">doctores</div></div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-rose-500"><div class="text-xs text-slate-500">RED · &gt;100%</div><div class="text-2xl font-bold text-rose-600">2</div><div class="text-xs text-slate-500">doctores</div></div>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm mb-4">
+          <h3 class="font-bold text-slate-900 mb-3">Estado Presupuesto por Doctor</h3>
+          <div id="ceoBudgetList"></div>
+        </div>
+      </div>
+
+      <!-- Tab: TAMIZAJE -->
+      <div id="ceo-tamizaje" class="ceo-panel hidden">
+        <div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-lg p-4 mb-4">
+          <div class="text-sm text-indigo-900"><b>Resolución 3280 de 2018 · Rutas Integrales de Atención en Salud.</b> Las actividades de tamizaje (PSA, mamografía, sangre oculta, citología, hemograma, etc.) son <b>METAS</b> que deben cumplirse en la población que asiste a consulta. Alerta cuando estamos POR DEBAJO de la meta.</div>
+        </div>
+        <div class="grid grid-cols-5 gap-4" id="ceoTamizajeGrid"></div>
+      </div>
+
+      <!-- Tab: Criteria -->
+      <div id="ceo-criteria" class="ceo-panel hidden">
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <h3 class="font-bold text-slate-900 mb-3">Mapeo de Criterios · Auditoría</h3>
+          <div id="criteriaList"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// ========================================================================
+// DATA
+// ========================================================================
+const cases = [
+  { id: 'hyfobYJwJNM2GdXbh8OY', patient: 'Paciente 3:42 PM', email: 'juankuhi@hotmail.com', specialty: 'Medicina General', code: 'L030', diagnosis: 'CELULITIS DE LOS DEDOS DE LA MANO Y DEL PIE', date: '2026-04-14', status: 'Pendiente', doctor: 'Ana Escobar' },
+  { id: 'SZpSzFNpVHY3ibQxq34g', patient: 'Paciente 3:27 PM', email: 'juankuhi@hotmail.com', specialty: 'Medicina General', code: 'F840', diagnosis: 'AUTISMO EN LA NIÑEZ', date: '2026-04-14', status: 'Pendiente', doctor: 'Carlos Mora' },
+  { id: 'TrjSIm9B6vCkwcacAqGf', patient: 'Paciente 3:11 PM', email: 'juankuhi@hotmail.com', specialty: 'Medicina General', code: 'H001', diagnosis: 'CALACIO [CHALAZION]', date: '2026-04-14', status: 'Pendiente', doctor: 'Laura Vega' },
+  { id: 'qerX38ijrPKE7u8i2O7w', patient: 'Paciente 2:53 PM', email: 'juankuhi@hotmail.com', specialty: 'Medicina General', code: 'G431', diagnosis: 'MIGRAÑA CON AURA [MIGRAÑA CLASICA]', date: '2026-04-14', status: 'Pendiente', doctor: 'Pedro Ruiz' },
+  { id: 'KL8mP2vNq4rStYuI9vX1', patient: 'Paciente 11:30 AM', email: 'paciente5@gmail.com', specialty: 'Pediatría', code: 'J00X', diagnosis: 'RINOFARINGITIS AGUDA [RESFRIADO COMÚN]', date: '2026-04-14', status: 'Revisado', doctor: 'María Gil' },
+  { id: 'Wp3nQ7sB8fGhKjLmN1pQ', patient: 'Paciente 10:15 AM', email: 'paciente6@gmail.com', specialty: 'Cardiología', code: 'I10X', diagnosis: 'HIPERTENSIÓN ESENCIAL (PRIMARIA)', date: '2026-04-13', status: 'Aprobado', doctor: 'Jorge Parra' },
+  { id: 'Xy5zAq9cD3eFgHiJkLmN', patient: 'Paciente 4:20 PM', email: 'paciente7@gmail.com', specialty: 'Medicina General', code: 'E119', diagnosis: 'DIABETES MELLITUS NO ESPECIFICADA', date: '2026-04-13', status: 'Pendiente', doctor: 'Ana Escobar' },
+  { id: 'Op1qR2sT3uV4wX5yZ6aB', patient: 'Paciente 9:45 AM', email: 'paciente8@gmail.com', specialty: 'Pediatría', code: 'A09X', diagnosis: 'DIARREA Y GASTROENTERITIS', date: '2026-04-13', status: 'Revisado', doctor: 'Carlos Mora' },
+];
+
+const doctors = [
+  { rank: 1, name: 'Ana Escobar', specialty: 'Medicina General', score: 96.2, orders: 142, exams: 387, cost: 22100000, approval: 98, status: 'EXCELENTE', tier: 'emerald' },
+  { rank: 2, name: 'Carlos Mora', specialty: 'Cardiología', score: 91.8, orders: 89, exams: 198, cost: 9800000, approval: 95, status: 'MUY BUENO', tier: 'teal' },
+  { rank: 3, name: 'Laura Vega', specialty: 'Pediatría', score: 88.4, orders: 201, exams: 456, cost: 22100000, approval: 92, status: 'BUENO', tier: 'cyan' },
+  { rank: 4, name: 'Pedro Ruiz', specialty: 'Medicina Interna', score: 82.1, orders: 315, exams: 612, cost: 38700000, approval: 88, status: 'ACEPTABLE', tier: 'amber' },
+  { rank: 5, name: 'María Gil', specialty: 'Medicina General', score: 74.3, orders: 289, exams: 534, cost: 41200000, approval: 79, status: 'EN REVISION', tier: 'orange' },
+  { rank: 6, name: 'Jorge Parra', specialty: 'Medicina Interna', score: 68.9, orders: 412, exams: 798, cost: 58900000, approval: 71, status: 'CRITICO', tier: 'rose' },
+];
+
+const scoreTiers = [
+  { range: '90-100', label: 'EXCELENTE', color: 'emerald', desc: 'Cumplimiento alto · Doctor modelo' },
+  { range: '80-89', label: 'MUY BUENO', color: 'teal', desc: 'Alto rendimiento · Menores brechas' },
+  { range: '70-79', label: 'BUENO', color: 'cyan', desc: 'Aceptable · Requiere monitoreo' },
+  { range: '60-69', label: 'ACEPTABLE', color: 'amber', desc: 'Revisión frecuente requerida' },
+  { range: '50-59', label: 'EN REVISION', color: 'orange', desc: 'Plan de mejora activo' },
+  { range: '<50', label: 'CRITICO', color: 'rose', desc: 'Intervención inmediata' },
+];
+
+const budgets = [
+  { specialty: 'Medicina General', used: 62, limit: 'COP 120M', level: 'GREEN' },
+  { specialty: 'Medicina Interna', used: 84, limit: 'COP 95M', level: 'YELLOW' },
+  { specialty: 'Cardiología', used: 93, limit: 'COP 180M', level: 'ORANGE' },
+  { specialty: 'Pediatría', used: 71, limit: 'COP 85M', level: 'GREEN' },
+  { specialty: 'Oncología', used: 108, limit: 'COP 220M', level: 'RED' },
+];
+
+// Actividades de tamizaje según Resolución 3280 de 2018 (Rutas Integrales de Atención en Salud)
+const tamizajes = [
+  { name: 'Citología Cervicouterina', goal: 90, current: 71, pop: 'Mujeres 25-69 años', icon: '🎗️', norm: 'Res. 3280 · RPMS' },
+  { name: 'Mamografía Bilateral', goal: 85, current: 58, pop: 'Mujeres 50-69 (cada 2 años)', icon: '🎀', norm: 'Res. 3280 · RPMS' },
+  { name: 'PSA + Tacto Rectal', goal: 80, current: 64, pop: 'Hombres 50-75 años', icon: '🧑‍⚕️', norm: 'Res. 3280 · RPMS' },
+  { name: 'Sangre Oculta en Heces', goal: 85, current: 47, pop: 'Adultos 50-75 años', icon: '🧪', norm: 'Res. 3280 · CCR' },
+  { name: 'Hemograma Completo', goal: 95, current: 92, pop: 'Consulta general adultos', icon: '🩸', norm: 'Res. 3280 · Básico' },
+  { name: 'Glucemia / HbA1c', goal: 90, current: 83, pop: 'Adultos 45+ o con riesgo', icon: '💉', norm: 'Res. 3280 · RCV' },
+  { name: 'Perfil Lipídico', goal: 88, current: 79, pop: 'Adultos 40+ (RCV)', icon: '❤️', norm: 'Res. 3280 · RCV' },
+  { name: 'Agudeza Visual', goal: 90, current: 86, pop: 'Todas las edades', icon: '👁️', norm: 'Res. 3280 · RPMS' },
+  { name: 'VIH / Sífilis Gestantes', goal: 100, current: 97, pop: 'Embarazadas (todas)', icon: '🤰', norm: 'Res. 3280 · Materno' },
+  { name: 'Tamizaje Neonatal (TSH+)', goal: 100, current: 94, pop: 'Recién nacidos', icon: '👶', norm: 'Res. 3280 · Primera Infancia' },
+];
+
+// Órdenes con desglose de pertinencia (evaluado por el sistema contra GPC y CIE-10)
+const topExams = [
+  { name: 'Hemograma Completo', count: 387, pertinent: 341, nonPertinent: 46 },
+  { name: 'Glucemia en Ayunas', count: 294, pertinent: 268, nonPertinent: 26 },
+  { name: 'Perfil Lipídico', count: 261, pertinent: 198, nonPertinent: 63 },
+  { name: 'Ecografía Abdominal', count: 198, pertinent: 121, nonPertinent: 77 },
+  { name: 'Radiografía de Tórax', count: 178, pertinent: 142, nonPertinent: 36 },
+  { name: 'TSH / T4 Libre', count: 145, pertinent: 88, nonPertinent: 57 },
+  { name: 'Uroanálisis Completo', count: 132, pertinent: 119, nonPertinent: 13 },
+  { name: 'Otros', count: 252, pertinent: 201, nonPertinent: 51 },
+];
+
+// Remisiones a especialistas con pertinencia (Res. 3100 · referencia/contrarreferencia)
+const topReferrals = [
+  { name: 'Cardiología', count: 142, pertinent: 119, nonPertinent: 23 },
+  { name: 'Ortopedia', count: 128, pertinent: 74, nonPertinent: 54 },
+  { name: 'Ginecología', count: 108, pertinent: 97, nonPertinent: 11 },
+  { name: 'Dermatología', count: 96, pertinent: 52, nonPertinent: 44 },
+  { name: 'Neurología', count: 84, pertinent: 69, nonPertinent: 15 },
+  { name: 'Endocrinología', count: 71, pertinent: 58, nonPertinent: 13 },
+  { name: 'Urología', count: 62, pertinent: 41, nonPertinent: 21 },
+  { name: 'Otras especialidades', count: 139, pertinent: 108, nonPertinent: 31 },
+];
+
+// Pertinencia de remisiones por doctor
+const doctorReferralPertinence = [
+  { name: 'Ana Escobar', total: 48, pertinent: 47, pct: 98 },
+  { name: 'Carlos Mora', total: 62, pertinent: 59, pct: 95 },
+  { name: 'Laura Vega', total: 71, pertinent: 63, pct: 89 },
+  { name: 'Pedro Ruiz', total: 94, pertinent: 76, pct: 81 },
+  { name: 'María Gil', total: 112, pertinent: 81, pct: 72 },
+  { name: 'Jorge Parra', total: 143, pertinent: 86, pct: 60 },
+];
+
+// Pertinencia por doctor (% de órdenes que el sistema clasificó como pertinentes)
+const doctorPertinence = [
+  { name: 'Ana Escobar', total: 387, pertinent: 378, pct: 98 },
+  { name: 'Carlos Mora', total: 198, pertinent: 190, pct: 96 },
+  { name: 'Laura Vega', total: 456, pertinent: 411, pct: 90 },
+  { name: 'Pedro Ruiz', total: 612, pertinent: 502, pct: 82 },
+  { name: 'María Gil', total: 534, pertinent: 395, pct: 74 },
+  { name: 'Jorge Parra', total: 798, pertinent: 503, pct: 63 },
+];
+
+const criteriaMap = [
+  { code: 'HC-01', name: 'Motivo de consulta claro', weight: 10, avg: 94 },
+  { code: 'HC-02', name: 'Enfermedad actual detallada', weight: 15, avg: 89 },
+  { code: 'EF-01', name: 'Examen físico completo', weight: 20, avg: 82 },
+  { code: 'DX-01', name: 'Diagnóstico CIE-10 correcto', weight: 15, avg: 91 },
+  { code: 'PL-01', name: 'Plan de manejo pertinente', weight: 20, avg: 78 },
+  { code: 'OR-01', name: 'Órdenes médicas justificadas', weight: 10, avg: 85 },
+  { code: 'SG-01', name: 'Seguimiento programado', weight: 10, avg: 73 },
+];
+
+// ========================================================================
+// NAVIGATION
+// ========================================================================
+function showView(view) {
+  document.getElementById('launcher').classList.add('hidden');
+  document.querySelectorAll('[id^="view-"]').forEach(v => v.classList.add('hidden'));
+  document.getElementById('view-' + view).classList.remove('hidden');
+  window.scrollTo(0, 0);
+  if (view === 'audit') renderAudit();
+  if (view === 'auditor') renderAuditor();
+  if (view === 'ceo') renderCEO();
+}
+function goHome() {
+  document.querySelectorAll('[id^="view-"]').forEach(v => v.classList.add('hidden'));
+  document.getElementById('launcher').classList.remove('hidden');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') goHome(); });
+
+// ========================================================================
+// VIEW 1: AUDIT MODULE
+// ========================================================================
+let currentFilter = { text: '', status: 'all' };
+function renderAudit() {
+  filterCases();
+}
+function handleUpload(fileList, mode) {
+  const files = Array.from(fileList);
+  const pdfs = files.filter(f => f.name.toLowerCase().endsWith('.pdf'));
+  if (pdfs.length === 0) {
+    alert('⚠ No se encontraron archivos PDF' + (mode === 'folder' ? ' en la carpeta seleccionada.' : '.'));
+    return;
+  }
+  // Agrupa por subcarpeta si viene de "folder"
+  const byFolder = {};
+  pdfs.forEach(f => {
+    const path = f.webkitRelativePath || f.name;
+    const folder = path.includes('/') ? path.split('/').slice(0, -1).join('/') : '(raíz)';
+    byFolder[folder] = (byFolder[folder] || 0) + 1;
+  });
+  const summary = Object.entries(byFolder).slice(0, 6).map(([k, v]) => `  • ${k}: ${v} PDF${v !== 1 ? 's' : ''}`).join('\n');
+  const extra = Object.keys(byFolder).length > 6 ? `\n  … y ${Object.keys(byFolder).length - 6} carpeta(s) más` : '';
+  alert(
+    (mode === 'folder' ? '📁 Carpeta recibida' : '📄 Archivos recibidos') +
+    `\n\n${pdfs.length} PDF${pdfs.length !== 1 ? 's' : ''} en cola de procesamiento.\n\n` +
+    (mode === 'folder' ? `Desglose:\n${summary}${extra}\n\n` : '') +
+    'El sistema Telepatia procesará cada expediente, generará la historia clínica y ejecutará la auditoría automática. Te notificaremos cuando estén listos.'
+  );
+}
+function filterCases() {
+  const text = (document.getElementById('caseSearch')?.value || '').toLowerCase();
+  const status = document.getElementById('statusFilter')?.value || 'all';
+  const filtered = cases.filter(c =>
+    (status === 'all' || c.status === status) &&
+    (c.diagnosis.toLowerCase().includes(text) || c.code.toLowerCase().includes(text) || c.id.toLowerCase().includes(text) || c.doctor.toLowerCase().includes(text))
+  );
+  const statusColor = { 'Pendiente': 'amber', 'Revisado': 'blue', 'Aprobado': 'emerald' };
+  document.getElementById('caseList').innerHTML = filtered.map(c => `
+    <button onclick="showCaseDetail('${c.id}')" class="w-full text-left bg-white hover:bg-emerald-50 border border-slate-200 rounded-xl p-4 transition-colors">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2 text-xs font-semibold text-${statusColor[c.status]}-600">
+          <span class="w-2 h-2 rounded-full bg-${statusColor[c.status]}-500"></span>${c.status}
+        </div>
+        <span class="text-xs text-slate-500">${c.date}</span>
+      </div>
+      <div class="font-bold text-slate-900 text-sm">${c.patient}</div>
+      <div class="text-xs text-slate-500 mb-2">👤 ${c.email}</div>
+      <div class="inline-block text-[10px] font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded mb-2">${c.specialty}</div>
+      <div class="text-[10px] text-slate-400">ID: ${c.id.substring(0, 16)}</div>
+      <div class="mt-2 pt-2 border-t border-slate-100">
+        <div class="font-bold text-sm text-slate-800">${c.code}</div>
+        <div class="text-xs text-slate-600 leading-tight">${c.diagnosis}</div>
+      </div>
+    </button>
+  `).join('');
+  document.getElementById('caseCount').textContent = filtered.length;
+}
+function buildHC(c) {
+  // Historia clínica sintética. Las marcas <mark class="flaw" data-flaw="X">…</mark>
+  // indican fallas DETECTADAS AUTOMÁTICAMENTE por el sistema Telepatia (no las edita el auditor).
+  return {
+    motivo: `Paciente consulta por cuadro clínico asociado a ${c.diagnosis.toLowerCase()}, <mark class="flaw" data-flaw="HC-01">de aproximadamente 72 horas</mark> de evolución.`,
+    actual: `Paciente refiere inicio de síntomas hace 3 días, con progresión gradual. <mark class="flaw" data-flaw="HC-02">Niega fiebre cuantificada.</mark> Asocia malestar general. Ha tomado acetaminofén 500mg cada 8 horas con mejoría parcial. No refiere alergias medicamentosas conocidas.`,
+    antecedentes: `Personales: Niega antecedentes patológicos de importancia. No quirúrgicos. No transfusionales.\nFamiliares: Madre con HTA en manejo. Padre con DM2.\nFarmacológicos: Sin medicación crónica.\nAlérgicos: Niega.\nTóxicos: No fuma, consumo social de alcohol.`,
+    revision: `Cabeza y cuello: sin alteraciones. Cardiopulmonar: sin disnea ni dolor torácico. Gastrointestinal: niega náusea, vómito. Genitourinario: sin síntomas. Neurológico: sin focalización.`,
+    examen: `Signos vitales: TA 120/78 mmHg · FC 82 lpm · FR 18 rpm · T° 36.8°C · SpO₂ 98% · Peso 68 kg · Talla 1.68 m.\nPaciente en buen estado general, consciente, orientado en tres esferas, hidratado, afebril. Cardiopulmonar: ruidos cardíacos rítmicos, sin soplos; murmullo vesicular conservado bilateral, sin agregados. <mark class="flaw" data-flaw="EF-01">Abdomen: blando, depresible.</mark>`,
+    analisis: `Paciente con cuadro compatible con ${c.diagnosis}. Evolución esperable. No se evidencian signos de alarma al momento de la valoración. Se requiere seguimiento para confirmar resolución del cuadro y descartar complicaciones.`,
+    plan: `1. ${c.diagnosis} (CIE-10: ${c.code})\n2. Manejo sintomático con acetaminofén 500mg vía oral cada 8 horas por 5 días.\n3. Hidratación oral abundante.\n4. Hemograma completo + PCR (ver órdenes).\n<mark class="flaw" data-flaw="SG-01">5. Control en 7 días o antes si empeora.</mark>`,
+    ordenes: ['Hemograma IV completo', 'Proteína C Reactiva', 'Uroanálisis'],
+    flaws: [
+      { code: 'HC-02', severity: 'media', section: 'Enfermedad Actual', finding: 'No se documentó temperatura cuantificada ni curva térmica, solo referencia subjetiva del paciente.', recommendation: 'Registrar temperatura medida en consulta y preguntar por valores previos.' },
+      { code: 'EF-01', severity: 'alta', section: 'Examen Físico', finding: 'Examen abdominal incompleto: no se describen peristaltismo, masas, puntos dolorosos específicos ni signos peritoneales.', recommendation: 'Complementar con auscultación de ruidos intestinales, palpación profunda y búsqueda de Murphy/McBurney/Blumberg según pertinencia.' },
+      { code: 'SG-01', severity: 'media', section: 'Plan · Seguimiento', finding: 'No se documentaron los signos de alarma específicos explicados al paciente.', recommendation: 'Listar explícitamente los signos de alarma entregados (p. ej. fiebre >38.5°C, dolor incoercible, sangrado).' },
+    ],
+  };
+}
+function showCaseDetail(id) {
+  const c = cases.find(x => x.id === id);
+  if (!c) return;
+  const hc = buildHC(c);
+  document.getElementById('caseDetail').innerHTML = `
+    <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <button onclick="renderAudit()" class="text-xs text-emerald-600 hover:text-emerald-700 font-semibold mb-1">← Volver a lista</button>
+          <div class="text-xs text-slate-500">Expediente · ${c.id} · ${c.date}</div>
+          <h1 class="text-2xl font-bold text-slate-900">${c.patient}</h1>
+          <div class="text-sm text-slate-600">${c.email} · Dr. ${c.doctor} · ${c.specialty} · CIE-10 <b>${c.code}</b></div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="alert('✓ Auditoría APROBADA. El caso ha sido marcado como conforme.')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold">✓ Aprobar</button>
+          <button onclick="alert('⚠ Auditoría RECHAZADA. Se ha enviado feedback al doctor.')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-sm font-semibold">✗ Rechazar</button>
+        </div>
+      </div>
+
+      <!-- Two-column: Historia Clínica | Rúbrica -->
+      <div class="grid grid-cols-12 gap-4">
+
+        <!-- HISTORIA CLÍNICA -->
+        <div class="col-span-7 bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div class="bg-emerald-50 border-b border-emerald-100 px-5 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-600">📄</span>
+              <h3 class="font-bold text-slate-900">Historia Clínica</h3>
+            </div>
+            <span class="text-xs text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Las fallas detectadas aparecen resaltadas con su código</span>
+          </div>
+          <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+            <section>
+              <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700 mb-1">Motivo de Consulta</div>
+              <p class="text-sm text-slate-700 leading-relaxed">${hc.motivo}</p>
+            </section>
+            <section>
+              <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700 mb-1">Enfermedad Actual</div>
+              <p class="text-sm text-slate-700 leading-relaxed">${hc.actual}</p>
+            </section>
+            <section>
+              <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700 mb-1">Antecedentes</div>
+              <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">${hc.antecedentes}</p>
+            </section>
+            <section>
+              <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700 mb-1">Revisión por Sistemas</div>
+              <p class="text-sm text-slate-700 leading-relaxed">${hc.revision}</p>
+            </section>
+            <section>
+              <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700 mb-1">Examen Físico</div>
+              <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">${hc.examen}</p>
+            </section>
+            <section>
+              <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700 mb-1">Análisis</div>
+              <p class="text-sm text-slate-700 leading-relaxed">${hc.analisis}</p>
+            </section>
+            <section>
+              <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700 mb-1">Plan de Manejo</div>
+              <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">${hc.plan}</p>
+            </section>
+            <section>
+              <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700 mb-1">Órdenes Médicas / Paraclínicos</div>
+              <ul class="text-sm text-slate-700 list-disc list-inside">
+                ${hc.ordenes.map(o => `<li>${o}</li>`).join('')}
+              </ul>
+            </section>
+          </div>
+        </div>
+
+        <!-- RÚBRICA AUTOMÁTICA + FEEDBACK GENERADO POR EL SISTEMA -->
+        <div class="col-span-5 space-y-4">
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div class="bg-emerald-600 text-white px-5 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span>🤖</span>
+                <h3 class="font-bold">Evaluación Automática · Telepatia</h3>
+              </div>
+              <div class="text-xs">Score: <span class="font-bold">78</span>/100</div>
+            </div>
+            <div class="px-4 py-2 bg-slate-50 border-b border-slate-200 text-[11px] text-slate-600">
+              El sistema analizó la historia y detectó <b>${hc.flaws.length} hallazgos</b>. El auditor no corrige: solo revisa, aprueba y envía el feedback generado.
+            </div>
+            <div class="p-4 space-y-3 max-h-[45vh] overflow-y-auto">
+              ${criteriaMap.map(cr => {
+                const flaw = hc.flaws.find(f => f.code === cr.code);
+                const stateColor = !flaw ? 'emerald' : flaw.severity === 'alta' ? 'rose' : 'amber';
+                const stateLabel = !flaw ? 'Conforme' : flaw.severity === 'alta' ? 'Falla alta' : 'Falla media';
+                const icon = !flaw ? '✓' : flaw.severity === 'alta' ? '✗' : '◐';
+                return `
+                <div class="border border-slate-200 rounded-lg p-3">
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1">
+                      <div class="text-[11px] text-slate-500 font-mono">${cr.code} · Peso ${cr.weight}%</div>
+                      <div class="text-sm font-semibold text-slate-900">${cr.name}</div>
+                      ${flaw ? `<div class="text-xs text-slate-600 mt-1 italic">${flaw.finding}</div>` : ''}
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-${stateColor}-100 text-${stateColor}-700 whitespace-nowrap">${icon} ${stateLabel}</span>
+                  </div>
+                </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- Feedback AUTO-GENERADO -->
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 text-white px-5 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span>💬</span>
+                <h3 class="font-bold text-sm">Feedback al Doctor · Generado por el sistema</h3>
+              </div>
+              <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded">AUTO</span>
+            </div>
+            <div class="p-4">
+              <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-700 leading-relaxed max-h-[30vh] overflow-y-auto">
+                <p class="mb-2"><b>Estimado Dr. ${c.doctor}</b>,</p>
+                <p class="mb-2">Tras la auditoría automática de la historia clínica del paciente <b>${c.patient}</b> (expediente ${c.id}, ${c.date}), el sistema Telepatia identificó los siguientes hallazgos que se recomienda reforzar en próximas consultas:</p>
+                <ol class="list-decimal list-inside space-y-2 mb-2">
+                  ${hc.flaws.map(f => `<li><b>${f.section} (${f.code}):</b> ${f.finding} <span class="text-emerald-700">Recomendación: ${f.recommendation}</span></li>`).join('')}
+                </ol>
+                <p class="mb-1">Score obtenido en esta auditoría: <b>78/100</b>. Los criterios restantes se evaluaron como conformes.</p>
+                <p class="text-slate-500">— Sistema de Auditoría Telepatia</p>
+              </div>
+              <div class="flex items-center justify-between mt-3">
+                <label class="flex items-center gap-2 text-xs text-slate-600">
+                  <input type="checkbox" checked class="w-3 h-3"/> Notificar por correo
+                </label>
+                <button onclick="alert('📤 Feedback enviado automáticamente al Dr. ${c.doctor}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold">Enviar feedback</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerta de Presupuesto -->
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
+            <div class="flex items-start gap-2">
+              <span>💰</span>
+              <div class="text-xs text-amber-800">
+                <b class="text-amber-900">Alerta de Presupuesto</b><br/>
+                Dr. ${c.doctor} está al <b>84%</b> del presupuesto mensual. Estado: <b>YELLOW</b>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ========================================================================
+// VIEW 2: AUDITOR DASHBOARD
+// ========================================================================
+function renderAuditor() {
+  renderDoctorTable();
+  renderScoreTiers();
+  renderBudgetAlerts();
+  renderTamizajeList();
+  renderExamsList();
+  renderPertinenceList();
+  renderReferralsList();
+  renderReferralDoctorList();
+  renderAuditorTrend();
+}
+let doctorSort = 'score';
+function sortDoctors(key) {
+  doctorSort = key;
+  renderDoctorTable();
+}
+function renderDoctorTable() {
+  const key = doctorSort;
+  const list = [...doctors].sort((a, b) => key === 'score' ? b.score - a.score : b.orders - a.orders);
+  document.getElementById('doctorTable').innerHTML = list.map((d, i) => {
+    const colors = { emerald: 'text-emerald-600 bg-emerald-100', teal: 'text-teal-600 bg-teal-100', cyan: 'text-cyan-600 bg-cyan-100', amber: 'text-amber-600 bg-amber-100', orange: 'text-orange-600 bg-orange-100', rose: 'text-rose-600 bg-rose-100' };
+    return `
+      <tr class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onclick="alert('Abriendo perfil de Dr. ${d.name}...')">
+        <td class="py-3 font-bold text-slate-900">#${i + 1}</td>
+        <td class="py-3">
+          <div class="font-semibold text-slate-900">${d.name}</div>
+          <div class="text-xs text-slate-500">${d.specialty}</div>
+        </td>
+        <td class="py-3 text-center font-bold ${d.score >= 85 ? 'text-emerald-600' : d.score >= 75 ? 'text-amber-600' : 'text-rose-600'}">${d.score}</td>
+        <td class="py-3 text-center text-slate-700">${d.orders}</td>
+        <td class="py-3 text-center text-slate-700">${d.exams}</td>
+        <td class="py-3 text-center"><span class="inline-block text-[10px] font-bold px-2 py-1 rounded ${colors[d.tier]}">${d.status}</span></td>
+      </tr>
+    `;
+  }).join('');
+}
+function renderScoreTiers() {
+  document.getElementById('scoreTiers').innerHTML = scoreTiers.map(t => `
+    <div class="flex items-center gap-3">
+      <div class="w-1 h-10 bg-${t.color}-500 rounded-full"></div>
+      <div class="flex-1">
+        <div class="flex items-baseline gap-2">
+          <div class="font-bold text-slate-900 text-sm">${t.range}</div>
+          <div class="text-xs font-bold text-${t.color}-600">${t.label}</div>
+        </div>
+        <div class="text-xs text-slate-500">${t.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function renderBudgetAlerts() {
+  const levelMap = { GREEN: 'emerald', YELLOW: 'amber', ORANGE: 'orange', RED: 'rose' };
+  document.getElementById('budgetAlerts').innerHTML = budgets.map(b => {
+    const color = levelMap[b.level];
+    const pct = Math.min(b.used, 100);
+    const over = b.used > 100;
+    return `
+      <div class="border border-slate-200 rounded-lg p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <div class="font-semibold text-slate-900 text-sm">${b.specialty}</div>
+            <div class="text-xs text-slate-500">Límite: ${b.limit}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-${color}-600">${b.used}%</span>
+            <span class="text-[10px] font-bold px-2 py-1 rounded bg-${color}-100 text-${color}-700">${b.level}</span>
+          </div>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+          <div class="bg-${color}-500 h-2 rounded-full transition-all" style="width: ${pct}%"></div>
+        </div>
+        ${over ? '<div class="text-xs text-rose-600 font-semibold mt-2">⚠ Límite excedido · Intervención inmediata</div>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+function renderTamizajeList() {
+  document.getElementById('tamizajeList').innerHTML = tamizajes.map(t => {
+    const onTarget = t.current >= t.goal;
+    const color = onTarget ? 'emerald' : t.current >= t.goal * 0.9 ? 'amber' : 'rose';
+    return `
+      <div class="border border-slate-200 rounded-lg p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">${t.icon}</span>
+            <div>
+              <div class="font-semibold text-slate-900 text-sm">${t.name}</div>
+              <div class="text-xs text-slate-500">${t.pop} · Meta: ${t.goal}%</div>
+              <div class="text-[10px] text-indigo-600 font-semibold">${t.norm}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-${color}-600">${t.current}%</div>
+            <div class="text-[10px] font-bold text-${color}-600">${onTarget ? '✓ OK' : '! BAJO META'}</div>
+          </div>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+          <div class="bg-${color}-500 h-2 rounded-full" style="width: ${t.current}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function renderExamsList() {
+  const max = Math.max(...topExams.map(e => e.count));
+  document.getElementById('examsList').innerHTML = topExams.map(e => {
+    const pctP = Math.round((e.pertinent / e.count) * 100);
+    const pctN = 100 - pctP;
+    const barTotal = (e.count / max) * 100;
+    const pBar = barTotal * (e.pertinent / e.count);
+    const nBar = barTotal * (e.nonPertinent / e.count);
+    const flag = pctN >= 20;
+    return `
+      <div>
+        <div class="flex items-center justify-between text-sm mb-1">
+          <span class="text-slate-700 flex items-center gap-1">${flag ? '<span title="Alto % impertinencia">⚠️</span>' : ''} ${e.name}</span>
+          <span class="text-xs text-slate-500"><b class="text-slate-900">${e.count}</b> · <span class="text-emerald-600">${e.pertinent} pertinentes (${pctP}%)</span> · <span class="text-rose-600">${e.nonPertinent} no pertinentes (${pctN}%)</span></span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden flex">
+          <div class="bg-emerald-500 h-2" style="width: ${pBar}%"></div>
+          <div class="bg-rose-500 h-2" style="width: ${nBar}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function renderPertinenceList() {
+  const flagged = doctorPertinence.filter(d => d.pct < 90).sort((a, b) => a.pct - b.pct);
+  const ok = doctorPertinence.filter(d => d.pct >= 90);
+  document.getElementById('pertinenceList').innerHTML = `
+    ${flagged.map(d => {
+      const color = d.pct < 70 ? 'rose' : d.pct < 80 ? 'orange' : 'amber';
+      const nonP = d.total - d.pertinent;
+      return `
+        <div class="border border-${color}-200 bg-${color}-50 rounded-lg p-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex-1">
+              <div class="text-sm font-bold text-slate-900">🚩 Dr. ${d.name}</div>
+              <div class="text-xs text-slate-600">${d.total} órdenes · <span class="text-emerald-700 font-semibold">${d.pertinent} pertinentes</span> · <span class="text-rose-700 font-semibold">${nonP} impertinentes</span></div>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-${color}-600">${d.pct}%</div>
+              <div class="text-[9px] font-bold text-${color}-700">PERTINENCIA</div>
+            </div>
+          </div>
+          <div class="w-full bg-white rounded-full h-1.5 mt-2 overflow-hidden flex">
+            <div class="bg-emerald-500 h-1.5" style="width: ${d.pct}%"></div>
+            <div class="bg-rose-500 h-1.5" style="width: ${100 - d.pct}%"></div>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <button onclick="alert('📧 Recap semanal enviado al Dr. ${d.name}:\\n\\n• ${d.total} órdenes esta semana\\n• ${d.pct}% pertinentes / ${100 - d.pct}% impertinentes\\n• Recomendaciones de GPC adjuntas')" class="flex-1 text-[11px] px-2 py-1.5 bg-white hover:bg-${color}-100 border border-${color}-300 rounded font-semibold text-${color}-700">📧 Enviar recap ahora</button>
+            <button onclick="alert('Perfil del Dr. ${d.name} · Detalle de órdenes impertinentes')" class="text-[11px] px-2 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 rounded font-semibold text-slate-700">Ver detalle</button>
+          </div>
+        </div>
+      `;
+    }).join('')}
+    <div class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-2 mt-2">
+      ✓ ${ok.length} doctores con pertinencia ≥ 90% (sin alerta): ${ok.map(d => d.name).join(', ')}
+    </div>
+  `;
+}
+function renderReferralsList() {
+  const max = Math.max(...topReferrals.map(e => e.count));
+  document.getElementById('referralsList').innerHTML = topReferrals.map(e => {
+    const pctP = Math.round((e.pertinent / e.count) * 100);
+    const pctN = 100 - pctP;
+    const barTotal = (e.count / max) * 100;
+    const pBar = barTotal * (e.pertinent / e.count);
+    const nBar = barTotal * (e.nonPertinent / e.count);
+    const flag = pctN >= 20;
+    return `
+      <div>
+        <div class="flex items-center justify-between text-sm mb-1">
+          <span class="text-slate-700 flex items-center gap-1">${flag ? '<span title="Alto % impertinencia">⚠️</span>' : ''} ${e.name}</span>
+          <span class="text-xs text-slate-500"><b class="text-slate-900">${e.count}</b> · <span class="text-emerald-600">${e.pertinent} pertinentes (${pctP}%)</span> · <span class="text-rose-600">${e.nonPertinent} no pertinentes (${pctN}%)</span></span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden flex">
+          <div class="bg-emerald-500 h-2" style="width: ${pBar}%"></div>
+          <div class="bg-rose-500 h-2" style="width: ${nBar}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function renderReferralDoctorList() {
+  const flagged = doctorReferralPertinence.filter(d => d.pct < 90).sort((a, b) => a.pct - b.pct);
+  const ok = doctorReferralPertinence.filter(d => d.pct >= 90);
+  document.getElementById('referralDoctorList').innerHTML = `
+    ${flagged.map(d => {
+      const color = d.pct < 70 ? 'rose' : d.pct < 80 ? 'orange' : 'amber';
+      const nonP = d.total - d.pertinent;
+      return `
+        <div class="border border-${color}-200 bg-${color}-50 rounded-lg p-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex-1">
+              <div class="text-sm font-bold text-slate-900">🚩 Dr. ${d.name}</div>
+              <div class="text-xs text-slate-600">${d.total} remisiones · <span class="text-emerald-700 font-semibold">${d.pertinent} pertinentes</span> · <span class="text-rose-700 font-semibold">${nonP} impertinentes</span></div>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-${color}-600">${d.pct}%</div>
+              <div class="text-[9px] font-bold text-${color}-700">PERTINENCIA</div>
+            </div>
+          </div>
+          <div class="w-full bg-white rounded-full h-1.5 mt-2 overflow-hidden flex">
+            <div class="bg-emerald-500 h-1.5" style="width: ${d.pct}%"></div>
+            <div class="bg-rose-500 h-1.5" style="width: ${100 - d.pct}%"></div>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <button onclick="alert('📧 Recap semanal de remisiones enviado al Dr. ${d.name}:\\n\\n• ${d.total} remisiones esta semana\\n• ${d.pct}% pertinentes / ${100 - d.pct}% impertinentes\\n• Criterios de referencia/contrarreferencia adjuntos')" class="flex-1 text-[11px] px-2 py-1.5 bg-white hover:bg-${color}-100 border border-${color}-300 rounded font-semibold text-${color}-700">📧 Enviar recap ahora</button>
+            <button onclick="alert('Perfil del Dr. ${d.name} · Detalle de remisiones impertinentes')" class="text-[11px] px-2 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 rounded font-semibold text-slate-700">Ver detalle</button>
+          </div>
+        </div>
+      `;
+    }).join('')}
+    <div class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-2 mt-2">
+      ✓ ${ok.length} doctores con pertinencia ≥ 90% (sin alerta): ${ok.map(d => d.name).join(', ')}
+    </div>
+  `;
+}
+let auditorChart = null;
+function renderAuditorTrend() {
+  const canvas = document.getElementById('auditorTrendChart');
+  if (!canvas) return;
+  if (auditorChart) auditorChart.destroy();
+  const labels = [], data = [];
+  for (let i = 30; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    labels.push(d.getDate() + '/' + (d.getMonth() + 1));
+    data.push(Math.round(80 + Math.random() * 18));
+  }
+  auditorChart = new Chart(canvas, {
+    type: 'line',
+    data: { labels, datasets: [{ label: 'Puntaje Promedio', data, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true, pointRadius: 3 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { min: 60, max: 100 } } }
+  });
+}
+
+// ========================================================================
+// VIEW 3: CEO DASHBOARD
+// ========================================================================
+function renderCEO() {
+  ceoTab('general');
+}
+let ceoChart = null, doctorImpactChart = null;
+function ceoTab(name) {
+  document.querySelectorAll('.ceo-panel').forEach(p => p.classList.add('hidden'));
+  document.getElementById('ceo-' + name).classList.remove('hidden');
+  document.querySelectorAll('.ceo-tab').forEach(t => {
+    t.classList.remove('border-indigo-600', 'text-indigo-600');
+    t.classList.add('border-transparent', 'text-slate-500');
+  });
+  const tab = document.getElementById('tab-' + name);
+  tab.classList.add('border-indigo-600', 'text-indigo-600');
+  tab.classList.remove('border-transparent', 'text-slate-500');
+
+  if (name === 'general') { renderTopDoctors(); renderCEOTrend(); renderHeatmap(); }
+  if (name === 'doctor') { renderCEODoctorTable(); renderDoctorImpact(); renderCEOExams(); }
+  if (name === 'budget') renderCEOBudget();
+  if (name === 'tamizaje') renderCEOTamizaje();
+  if (name === 'criteria') renderCriteria();
+}
+function renderTopDoctors() {
+  const sorted = [...doctors].sort((a, b) => a.score - b.score);
+  const lows = sorted.slice(0, 3);
+  const highs = [...doctors].sort((a, b) => b.score - a.score).slice(0, 3);
+  const row = (d, isLow) => `
+    <div class="flex items-center gap-3 py-2 border-b border-slate-100 last:border-0">
+      <div class="flex-1">
+        <div class="font-semibold text-slate-900 text-sm">${d.name}</div>
+        <div class="text-xs text-slate-500">${d.specialty}</div>
+      </div>
+      <div class="flex-1 max-w-xs">
+        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+          <div class="bg-${isLow ? 'rose' : 'emerald'}-500 h-2" style="width: ${d.score}%"></div>
+        </div>
+      </div>
+      <div class="font-bold text-slate-900 w-14 text-right">${d.score}</div>
+    </div>
+  `;
+  document.getElementById('topLowDoctors').innerHTML = lows.map(d => row(d, true)).join('');
+  document.getElementById('topHighDoctors').innerHTML = highs.map(d => row(d, false)).join('');
+}
+function renderCEOTrend() {
+  const canvas = document.getElementById('ceoTrendChart');
+  if (!canvas) return;
+  if (ceoChart) ceoChart.destroy();
+  const labels = [], data = [];
+  for (let i = 30; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    labels.push(d.getDate() + '/' + (d.getMonth() + 1));
+    data.push(Math.round(82 + Math.random() * 15));
+  }
+  ceoChart = new Chart(canvas, {
+    type: 'line',
+    data: { labels, datasets: [{ label: 'Puntaje', data, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.08)', tension: 0.35, fill: true, pointRadius: 2 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { min: 60, max: 100 } } }
+  });
+}
+function renderHeatmap() {
+  const sections = ['Historia Clínica', 'Examen Físico', 'Diagnóstico', 'Plan Manejo', 'Órdenes', 'Seguimiento'];
+  const weeks = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
+  let html = '<div class="grid grid-cols-[140px_repeat(4,1fr)] gap-1">';
+  html += '<div></div>' + weeks.map(w => `<div class="text-xs text-center text-slate-500 font-semibold">${w}</div>`).join('');
+  sections.forEach(s => {
+    html += `<div class="text-xs text-slate-700 py-2 font-medium">${s}</div>`;
+    weeks.forEach(() => {
+      const v = Math.round(60 + Math.random() * 40);
+      const color = v >= 90 ? 'bg-emerald-500' : v >= 80 ? 'bg-emerald-300' : v >= 70 ? 'bg-amber-300' : 'bg-rose-300';
+      html += `<div class="${color} text-white text-xs font-bold rounded flex items-center justify-center h-10">${v}%</div>`;
+    });
+  });
+  html += '</div>';
+  document.getElementById('heatmap').innerHTML = html;
+}
+function renderCEODoctorTable() {
+  const colors = { emerald: 'text-emerald-600 bg-emerald-100', teal: 'text-teal-600 bg-teal-100', cyan: 'text-cyan-600 bg-cyan-100', amber: 'text-amber-600 bg-amber-100', orange: 'text-orange-600 bg-orange-100', rose: 'text-rose-600 bg-rose-100' };
+  document.getElementById('ceoDoctorTable').innerHTML = doctors.map((d, i) => `
+    <tr class="border-b border-slate-100 hover:bg-slate-50">
+      <td class="py-3 font-bold">#${i + 1}</td>
+      <td class="py-3 font-semibold">${d.name}</td>
+      <td class="py-3 text-slate-600">${d.specialty}</td>
+      <td class="py-3 text-center font-bold ${d.score >= 85 ? 'text-emerald-600' : d.score >= 75 ? 'text-amber-600' : 'text-rose-600'}">${d.score}</td>
+      <td class="py-3 text-center">${d.orders}</td>
+      <td class="py-3 text-right font-mono font-bold">COP ${(d.cost / 1000000).toFixed(1)}M</td>
+      <td class="py-3 text-center">${d.approval}%</td>
+      <td class="py-3 text-center"><span class="text-[10px] font-bold px-2 py-1 rounded ${colors[d.tier]}">${d.status}</span></td>
+    </tr>
+  `).join('');
+}
+function renderDoctorImpact() {
+  const canvas = document.getElementById('doctorImpactChart');
+  if (!canvas) return;
+  if (doctorImpactChart) doctorImpactChart.destroy();
+  const top5 = [...doctors].sort((a, b) => b.cost - a.cost).slice(0, 5);
+  doctorImpactChart = new Chart(canvas, {
+    type: 'bar',
+    data: { labels: top5.map(d => d.name), datasets: [{ label: 'Costo (millones COP)', data: top5.map(d => d.cost / 1000000), backgroundColor: ['#f43f5e', '#f97316', '#f59e0b', '#6366f1', '#10b981'] }] },
+    options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
+  });
+}
+function renderCEOExams() {
+  const max = Math.max(...topExams.map(e => e.count));
+  document.getElementById('ceoExamsList').innerHTML = topExams.map(e => `
+    <div class="py-1.5">
+      <div class="flex items-center justify-between text-sm mb-0.5">
+        <span class="text-slate-700">${e.name}</span>
+        <span class="font-bold text-slate-900 text-xs">${e.count} (${e.pct}%)</span>
+      </div>
+      <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-500 to-blue-500 h-1.5" style="width: ${(e.count / max) * 100}%"></div>
+      </div>
+    </div>
+  `).join('');
+}
+function renderCEOBudget() {
+  const levelMap = { GREEN: 'emerald', YELLOW: 'amber', ORANGE: 'orange', RED: 'rose' };
+  const items = doctors.map(d => {
+    const pct = Math.min(100, Math.round((d.cost / 50000000) * 100));
+    const level = pct > 100 ? 'RED' : pct >= 90 ? 'ORANGE' : pct >= 75 ? 'YELLOW' : 'GREEN';
+    return { ...d, pct, level };
+  });
+  document.getElementById('ceoBudgetList').innerHTML = items.map(d => {
+    const c = levelMap[d.level];
+    return `
+      <div class="flex items-center gap-4 py-3 border-b border-slate-100 last:border-0">
+        <div class="flex-1">
+          <div class="font-semibold text-slate-900">${d.name} <span class="text-xs text-slate-500 font-normal">· ${d.specialty}</span></div>
+          <div class="text-xs text-slate-500">COP ${(d.cost/1000000).toFixed(1)}M / COP 50M límite</div>
+        </div>
+        <div class="w-60">
+          <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+            <div class="bg-${c}-500 h-2.5" style="width: ${Math.min(d.pct, 100)}%"></div>
+          </div>
+        </div>
+        <div class="w-24 text-right">
+          <div class="text-sm font-bold text-${c}-600">${d.pct}%</div>
+          <div class="text-[10px] font-bold text-${c}-600">${d.level}</div>
+        </div>
+        <button onclick="alert('🔔 Alerta enviada a ${d.name} y supervisor')" class="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium">Notificar</button>
+      </div>
+    `;
+  }).join('');
+}
+function renderCEOTamizaje() {
+  document.getElementById('ceoTamizajeGrid').innerHTML = tamizajes.map(t => {
+    const onTarget = t.current >= t.goal;
+    const color = onTarget ? 'emerald' : t.current >= t.goal * 0.9 ? 'amber' : 'rose';
+    return `
+      <div class="bg-white rounded-xl p-5 shadow-sm border-t-4 border-${color}-500">
+        <div class="text-3xl mb-2">${t.icon}</div>
+        <div class="font-bold text-slate-900 text-base">${t.name}</div>
+        <div class="text-xs text-slate-500">${t.pop}</div>
+        <div class="text-[10px] text-indigo-600 font-semibold mb-3">${t.norm}</div>
+        <div class="text-xs text-slate-500">Meta</div>
+        <div class="text-2xl font-bold text-indigo-600">${t.goal}%</div>
+        <div class="mt-3 mb-1 text-xs text-slate-500">Progreso actual</div>
+        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+          <div class="bg-${color}-500 h-3" style="width: ${t.current}%"></div>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+          <div class="text-xl font-bold text-${color}-600">${t.current}%</div>
+          <div class="text-[10px] font-bold px-2 py-1 rounded bg-${color}-100 text-${color}-700">${onTarget ? '✓ EN META' : '! BAJO META'}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function renderCriteria() {
+  document.getElementById('criteriaList').innerHTML = `
+    <table class="w-full text-sm">
+      <thead class="text-xs text-slate-500 uppercase border-b border-slate-200">
+        <tr>
+          <th class="text-left py-2">Código</th>
+          <th class="text-left py-2">Criterio</th>
+          <th class="text-center py-2">Peso</th>
+          <th class="text-center py-2">Promedio</th>
+          <th class="text-left py-2 w-96">Rendimiento</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${criteriaMap.map(c => {
+          const color = c.avg >= 85 ? 'emerald' : c.avg >= 75 ? 'amber' : 'rose';
+          return `
+            <tr class="border-b border-slate-100">
+              <td class="py-3 font-mono font-bold text-indigo-600">${c.code}</td>
+              <td class="py-3">${c.name}</td>
+              <td class="py-3 text-center font-semibold">${c.weight}%</td>
+              <td class="py-3 text-center font-bold text-${color}-600">${c.avg}%</td>
+              <td class="py-3">
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                  <div class="bg-${color}-500 h-2" style="width: ${c.avg}%"></div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+// Safelist ensure Tailwind picks up dynamic classes
+const _safelist = ['bg-emerald-100','bg-emerald-500','bg-teal-100','bg-teal-500','bg-cyan-100','bg-cyan-500','bg-amber-100','bg-amber-500','bg-orange-100','bg-orange-500','bg-rose-100','bg-rose-500','text-emerald-600','text-teal-600','text-cyan-600','text-amber-600','text-orange-600','text-rose-600','text-emerald-700','text-teal-700','text-cyan-700','text-amber-700','text-orange-700','text-rose-700','border-emerald-500','border-teal-500','border-cyan-500','border-amber-500','border-orange-500','border-rose-500','bg-emerald-300','bg-amber-300','bg-rose-300'];
+</script>
+</body>
+</html>
